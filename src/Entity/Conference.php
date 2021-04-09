@@ -54,6 +54,19 @@ class Conference
         $this->comments = new ArrayCollection();
     }
 
+    /**
+     * By adding this __toString function, the display on the
+     * admin frontend will be better then only by primary key.     *
+     * It will not be like Conference #1, Conference #2 anymore,
+     * but this string that this function returns.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->city.' '.$this->year;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

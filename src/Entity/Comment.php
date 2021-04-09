@@ -48,6 +48,19 @@ class Comment
      */
     private $photoFilename;
 
+    /**
+     * By adding this __toString function, the display on the
+     * admin frontend will be better then only by primary key.     *
+     * It will not be like Comment #1, Comment #2 anymore,
+     * but the email adress that this function returns
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string) $this->getEmail();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
