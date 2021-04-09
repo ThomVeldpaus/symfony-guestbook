@@ -24,6 +24,11 @@ class ConferenceController extends AbstractController
      * which will render all conferences, because the twig variable
      * is filled with the data from $conferenceRepository->findAll()
      *
+     * The $twig Environment will automatically be added to the function
+     * by suggesting the \Twig\Environment type in the Controller method
+     *
+     *
+     *
      * @param \Twig\Environment $twig
      * @param \App\Repository\ConferenceRepository $conferenceRepository
      * @return \Symfony\Component\HttpFoundation\Response
@@ -32,6 +37,11 @@ class ConferenceController extends AbstractController
     public function index(Environment $twig, ConferenceRepository $conferenceRepository): Response
     {
         return new Response($twig->render('conference/index.html.twig', [
+            /**
+             * here you can assign template variables
+             * the 'conferenced variable will be filled with all results
+             * from the conferenceResopository
+             */
             'conferences' => $conferenceRepository->findAll(),
         ]));
     }
