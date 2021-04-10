@@ -7,9 +7,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Conference;
+use App\Form\CommentFormType;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +35,11 @@ class ConferenceController extends AbstractController
     private $twig;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
      * ConferenceController constructor.
      *
      * I need Twig in every method and to save some room by not injecting it to every method
@@ -39,9 +47,10 @@ class ConferenceController extends AbstractController
      *
      * @param Environment $twig
      */
-    public function __construct(Environment $twig)
+    public function __construct(Environment $twig, EntityManagerInterface $entityManager)
     {
         $this->twig = $twig;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -89,8 +98,45 @@ class ConferenceController extends AbstractController
     #[Route('/conference/{slug}', name: 'conference')]
     public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
     {
+        /**
+         * create a new comment entity object and use this model class as parameter for the createForm
+         * function (extended from AbstractController)
+         */
+        $comment = new Comment();
+        $form = $this->createForm(CommentFormType::class, $comment);
+
+        /**
+         * handleRequest() inspects the request and calls submit() when the form was submitted.
+         */
+        $form->handleRequest($request);
+        /**
+         * The form knows if the form was submitted from a request parameter
+         * Also will the form check if all submitted formdata is valid data
+         * to forward to the Entity Manager
+         */
+        if ($form->isSubmitted() && $form->isValid()) {
+            /**
+             * If all data is valid, connect the comment with the right conference
+             */
+            $comment->setConference($conference);
+            /**
+             * Use the Entity Manager to queue a persist task to create a new comment row in the database
+             */
+            $this->entityManager->persist($comment);
+            /**
+             * All queued tasks of the EntityManager are written to te database in Bulk
+             */
+            $this->entityManager->flush();
+
+            /**
+             * Redirect to the same page, when everything has gone correct, the new comment should be in the list
+             */
+            return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
+        }
+
         // the offset is the (int) GET parameter that will be given in the Request, or default 0
         $offset = max(0, $request->query->getInt('offset', 0));
+
         // the paginator is the returned Object of my custom method to fetch one in CommentRepository
         $paginator = $commentRepository->getCommentPaginator($conference, $offset);
 
@@ -103,6 +149,7 @@ class ConferenceController extends AbstractController
             'comments' => $paginator,
             'previous' => $offset - CommentRepository::PAGINATOR_PER_PAGE,
             'next' => min(count($paginator), $offset + CommentRepository::PAGINATOR_PER_PAGE),
+            'comment_form' => $form->createView(), // assign a form view to Twig as 'comment_form'
         ]));
     }
 }
