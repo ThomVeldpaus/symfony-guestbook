@@ -60,10 +60,13 @@ class CommentCrudController extends AbstractCrudController
         yield EmailField::new('email');
         yield TextareaField::new('text')
             ->hideOnIndex();
-        yield ImageField::new('photoFilename')
-            ->setBasePath('/uploads/photos')
-            -> setLabel('Photo');
-
+        if (Crud::PAGE_EDIT !== $pageName && Crud::PAGE_NEW !== $pageName){
+            yield ImageField::new('photoFilename')
+                ->setUploadDir('uploads/photos')
+                ->setBasePath('/uploads/photos')
+                ->setLabel('Photo');
+        }
+        yield TextField::new('state');
         $createdAt = DateTimeField::new('createdAt')->setFormTypeOptions([
             'html5' => true,
             'years' => range(date('Y'), date('Y') + 5),
@@ -71,9 +74,6 @@ class CommentCrudController extends AbstractCrudController
         ]);
         if (Crud::PAGE_EDIT === $pageName){
             yield $createdAt->setFormTypeOption('disabled', true);
-        } else {
-            yield $createdAt;
         }
     }
-
 }

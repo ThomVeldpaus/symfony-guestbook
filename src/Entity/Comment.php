@@ -55,9 +55,11 @@ class Comment
     private $photoFilename;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * Default state is 'submitted'
+     *
+     * @ORM\Column(type="string", length=255, options={"default": "submitted"}))
      */
-    private $state;
+    private $state = "submitted";
 
     /**
      * By adding this __toString function, the display on the
