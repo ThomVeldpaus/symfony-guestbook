@@ -40,6 +40,8 @@ class TwigEventSubscriber implements EventSubscriberInterface
      * When the variable is globally available, I don't have to add it
      * in every controller method Response
      *
+     * This is not the best way of doing it performance wise
+     *
      * @param ControllerEvent $event
      */
     public function onControllerEvent(ControllerEvent $event)
