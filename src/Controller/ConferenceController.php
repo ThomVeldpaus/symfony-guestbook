@@ -89,7 +89,7 @@ class ConferenceController extends AbstractController
     #[Route('/conference/{id}', name: 'conference')]
     public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
     {
-        // the offset is the Int parameter that will given in the Request, or default 0
+        // the offset is the (int) GET parameter that will be given in the Request, or default 0
         $offset = max(0, $request->query->getInt('offset', 0));
         // the paginator is the returned Object of my custom method to fetch one in CommentRepository
         $paginator = $commentRepository->getCommentPaginator($conference, $offset);
