@@ -6,6 +6,16 @@
     <h2>Give your feedback!</h2>
 
     {% for conference in conferences %}
+
+        {# here will be shown the result from my __toString function in the Conference Entity #}
         <h4>{{ conference }}</h4>
+
+        {# Add a link to the Conference show page by using the id #}
+        {# When you use the path function to get the URL, you are protected to URL changes #}
+        {# The parameter id will be posted like a Twig-map #}
+        <p>
+            <a href="{{ path('conference', { id: conference.id }) }}">View</a>
+        </p>
+
     {% endfor %}
 {% endblock %}
