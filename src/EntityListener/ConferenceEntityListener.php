@@ -12,9 +12,9 @@ use Symfony\Component\String\Slugger\SluggerInterface;
  * Will listen to Entity events to execute the generation of the slug
  * when the Entity is newly created and when the Entity is updated
  *
- * App/EntityListener is the package that provide Listening options to
- * Doctrine Entity evens and provides a way to inject objects in the methods
- * or assign them in the constructor to prevent repetition
+ * The EntityListener provides Listening options to
+ * Doctrine Entity events and provides a way to inject objects in the methods
+ * or assign them in the constructor to prevent repetition unlike the Entity class
  *
  * @package App\EntityListener
  */
