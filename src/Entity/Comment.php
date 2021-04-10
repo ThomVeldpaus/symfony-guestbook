@@ -55,6 +55,11 @@ class Comment
     private $photoFilename;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $state;
+
+    /**
      * By adding this __toString function, the display on the
      * admin frontend will be better then only by primary key.     *
      * It will not be like Comment #1, Comment #2 anymore,
@@ -151,6 +156,18 @@ class Comment
     public function setPhotoFilename(?string $photoFilename): self
     {
         $this->photoFilename = $photoFilename;
+
+        return $this;
+    }
+
+    public function getState(): ?string
+    {
+        return $this->state;
+    }
+
+    public function setState(string $state): self
+    {
+        $this->state = $state;
 
         return $this;
     }
