@@ -1,7 +1,0 @@
-#Add PostgreSQL to SymfonyCloud
-db:
-  type: postgresql:13
-
-  # The database container size is 1GB
-  disk: 1024
-  size: S

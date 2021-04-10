@@ -9,7 +9,6 @@ runtime:
         - sodium
         - ctype
         - iconv
-        - pdo_pgsql
         
 
 #variables:
@@ -46,7 +45,3 @@ hooks:
         set -x -e
 
         (>&2 symfony-deploy)
-
-# Connect the database in SymfonyCloud to the postgresql application container
-relationships:
-    database: "db:postgresql"
