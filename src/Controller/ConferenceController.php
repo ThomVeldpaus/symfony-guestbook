@@ -16,8 +16,34 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
+
+/**
+ * Class ConferenceController
+ * @package App\Controller
+ *
+ * The ConferenceController will show you the conferences that have
+ * been registerd, and the comments linked to that.
+ */
 class ConferenceController extends AbstractController
 {
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
+     * ConferenceController constructor.
+     *
+     * I need Twig in every method and to save some room by not injecting it to every method
+     * as a parameter, I can set it in the constructor and use it everywhere.
+     *
+     * @param Environment $twig
+     */
+    public function __construct(Environment $twig)
+    {
+        $this->twig = $twig;
+    }
+
     /**
      * This will route / to the controller action below the annotation
      * The controller action responds basic html body with an image
@@ -29,20 +55,17 @@ class ConferenceController extends AbstractController
      * The $twig Environment will automatically be added to the function
      * by suggesting the \Twig\Environment type in the Controller method
      *
-     *
-     *
-     * @param \Twig\Environment $twig
      * @param \App\Repository\ConferenceRepository $conferenceRepository
      * @return \Symfony\Component\HttpFoundation\Response
      */
     #[Route('/', name: 'homepage')]
-    public function index(Environment $twig, ConferenceRepository $conferenceRepository): Response
+    public function index(ConferenceRepository $conferenceRepository): Response
     {
-        return new Response($twig->render('conference/index.html.twig', [
+        return new Response($this->twig->render('conference/index.html.twig', [
             /**
-             * here you can assign template variables
-             * the 'conferenced variable will be filled with all results
-             * from the conferenceResopository
+             * here I can assign template variables
+             * the 'conference variable will be filled with all results
+             * from the ConferenceRepository
              */
             'conferences' => $conferenceRepository->findAll(),
         ]));
@@ -56,7 +79,6 @@ class ConferenceController extends AbstractController
      *
      * To make pages of the comments you give the Paginator to twig
      *
-     * @param Environment $twig
      * @param Conference $conference
      * @param CommentRepository $commentRepository
      * @return Response
@@ -65,16 +87,18 @@ class ConferenceController extends AbstractController
      * @throws \Twig\Error\SyntaxError
      */
     #[Route('/conference/{id}', name: 'conference')]
-    public function show(Request $request, Environment $twig, Conference $conference, CommentRepository $commentRepository): Response
+    public function show(Request $request, Conference $conference, CommentRepository $commentRepository): Response
     {
         // the offset is the Int parameter that will given in the Request, or default 0
         $offset = max(0, $request->query->getInt('offset', 0));
         // the paginator is the returned Object of my custom method to fetch one in CommentRepository
         $paginator = $commentRepository->getCommentPaginator($conference, $offset);
 
-        // Now the paginator is given trough to Twig and also is a next and previous value that is calculated
-        // from the current Requests $offset
-        return new Response($twig->render('conference/show.html.twig', [
+        /**
+         * Now the paginator is given trough to Twig and also is a next and previous value that is calculated
+         * from the current Requests $offset
+         */
+        return new Response($this->twig->render('conference/show.html.twig', [
             'conference' => $conference,
             'comments' => $paginator,
             'previous' => $offset - CommentRepository::PAGINATOR_PER_PAGE,
