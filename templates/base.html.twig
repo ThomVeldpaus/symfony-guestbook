@@ -20,8 +20,8 @@
             <ul>
                 {% for conference in conferences %}
                     {# Every conference will be a listitem link and displays the value of the __toString() function #}
-                    {# The link will always redirect to the conference with the corresponding id #}
-                    <li><a href="{{ path('conference', { id: conference.id}) }}">{{ conference }}</a></li>
+                    {# The link will always redirect to the conference with the corresponding slug #}
+                    <li><a href="{{ path('conference', { slug: conference.slug}) }}">{{ conference }}</a></li>
                 {% endfor %}
             </ul>
             <hr />

@@ -10,11 +10,11 @@
         {# here will be shown the result from my __toString function in the Conference Entity #}
         <h4>{{ conference }}</h4>
 
-        {# Add a link to the Conference show page by using the id #}
+        {# Add a link to the Conference show page by using the slug #}
         {# When you use the path function to get the URL, you are protected to URL changes #}
-        {# The parameter id will be posted like a Twig-map #}
+        {# The parameter slug will be posted like a Twig-map #}
         <p>
-            <a href="{{ path('conference', { id: conference.id }) }}">View</a>
+            <a href="{{ path('conference', { slug: conference.slug }) }}">View</a>
         </p>
 
     {% endfor %}
