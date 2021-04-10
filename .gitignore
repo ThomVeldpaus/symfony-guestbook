@@ -11,3 +11,6 @@
 
 # PhpStorm files
 /.idea/*
+
+# media bestanden
+/public/uploads/photos/
