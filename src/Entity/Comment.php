@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=CommentRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Comment
 {
@@ -112,6 +113,17 @@ class Comment
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    /**
+     * The ORM PrePersist event is activated when the object is
+     * saved to the database for the first time, the method below will
+     * be called, and sets in this case a new DateTime
+     * @ORM\PrePersist
+     */
+    public function setCreatedAtValue()
+    {
+        $this->createdAt = new \DateTime();
     }
 
     public function getConference(): ?Conference
