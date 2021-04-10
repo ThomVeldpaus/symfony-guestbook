@@ -10,6 +10,7 @@ namespace App\Controller;
 use App\Entity\Comment;
 use App\Entity\Conference;
 use App\Form\CommentFormType;
+use App\Message\CommentMessage;
 use App\Repository\CommentRepository;
 use App\Repository\ConferenceRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
@@ -41,6 +43,11 @@ class ConferenceController extends AbstractController
     private $entityManager;
 
     /**
+     * @var \Symfony\Component\Messenger\MessageBusInterface
+     */
+    private $bus;
+
+    /**
      * ConferenceController constructor.
      *
      * I need Twig in every method and to save some room by not injecting it to every method
@@ -50,10 +57,11 @@ class ConferenceController extends AbstractController
      * @param Environment $twig
      * @param EntityManagerInterface $entityManager
      */
-    public function __construct(Environment $twig, EntityManagerInterface $entityManager)
+    public function __construct(Environment $twig, EntityManagerInterface $entityManager, MessageBusInterface $bus)
     {
         $this->twig = $twig;
         $this->entityManager = $entityManager;
+        $this->bus = $bus;
     }
 
     /**
@@ -152,11 +160,25 @@ class ConferenceController extends AbstractController
                 // save the photo filename to the comment
                 $comment->setPhotoFilename($filename);
             }
+
             // Use the Entity Manager to queue a persist task to create a new comment row in the database
             $this->entityManager->persist($comment);
 
             // All queued tasks of the EntityManager are written to te database in Bulk
             $this->entityManager->flush();
+
+            // create context for CommentMessage
+            $context = [
+                'user_ip' => $request->getClientIp(),
+                'referer' => $request->get('referer'),
+                'permalink' => $request->getUri(),
+            ];
+
+            // set temporary queued state, so you can see that it's in the Message queue
+            $comment->setState('in message queue');
+
+            // The bus will dispatch and send the message to the queue
+            $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
 
             // Redirect to the same page, when everything has gone correct, the new comment should be in the list
             return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
