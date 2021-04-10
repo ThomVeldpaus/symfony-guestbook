@@ -18,11 +18,7 @@
             {# Pagetitle is a link that redirects always back to the homepage #}
             <h1><a href="{{ path('homepage') }}">Guestbook</a></h1>
             <ul>
-                {% for conference in conferences %}
-                    {# Every conference will be a listitem link and displays the value of the __toString() function #}
-                    {# The link will always redirect to the conference with the corresponding slug #}
-                    <li><a href="{{ path('conference', { slug: conference.slug}) }}">{{ conference }}</a></li>
-                {% endfor %}
+                    <li><a href="{{ path('homepage') }}">Click here to see all conferences!</a></li>
             </ul>
             <hr />
         </header>

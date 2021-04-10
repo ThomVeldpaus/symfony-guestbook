@@ -23,7 +23,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 class CommentRepository extends ServiceEntityRepository
 {
     // This constant will decide the max amount of comments per page
-    public const PAGINATOR_PER_PAGE = 2;
+    public const PAGINATOR_PER_PAGE = 3;
 
     public function __construct(ManagerRegistry $registry)
     {
