@@ -163,8 +163,6 @@ class ConferenceController extends AbstractController
             // get the Comment entity ready for db and fetch id
             $this->entityManager->persist($comment);
 
-            $this->entityManager->flush();
-
             // dispatch the CommentMessage with comment id and some context
             $this->bus->dispatch(new CommentMessage($comment->getId(), [
                 'photoFilename' => $filename,
