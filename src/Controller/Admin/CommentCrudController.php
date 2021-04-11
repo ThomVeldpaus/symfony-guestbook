@@ -61,6 +61,7 @@ class CommentCrudController extends AbstractCrudController
         yield TextareaField::new('text')
             ->hideOnIndex();
         if (Crud::PAGE_EDIT !== $pageName && Crud::PAGE_NEW !== $pageName){
+            yield TextField::new('clientIp');
             yield ImageField::new('photoFilename')
                 ->setUploadDir('uploads/photos')
                 ->setBasePath('/uploads/photos')
@@ -77,3 +78,4 @@ class CommentCrudController extends AbstractCrudController
         }
     }
 }
+

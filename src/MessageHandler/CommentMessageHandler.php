@@ -53,14 +53,20 @@ class CommentMessageHandler implements MessageHandlerInterface
     {
         // Get comment entity by id from CommentRepository with CommentMessage getId() method
         $comment = $this->commentRepository->find($message->getId());
+        $context = $message->getContext();
+        $comment->setPhotoFilename($context['photoFilename']);
+        $comment->setClientIp($context['clientIp']);
 
         if (!$comment) {
             return;
         }
 
-        // set the state of the Comment Entity object to 'published'
-        $comment->setState('published');
-        // Flushes data of all entity objects that have queued up before to database
+        // set the state of the Comment Entity object to 'submitted'
+        $comment->setState('submitted');
+
+        // Use the Entity Manager to queue a persist task to create a new comment row in the database
+        $this->entityManager->persist($comment);
+        // All queued tasks of the EntityManager are written to te database in Bulk
         $this->entityManager->flush();
     }
 }
