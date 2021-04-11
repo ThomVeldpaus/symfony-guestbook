@@ -42,9 +42,6 @@ class ConferenceController extends AbstractController
      */
     private $entityManager;
 
-    /**
-     * @var \Symfony\Component\Messenger\MessageBusInterface
-     */
     private $bus;
 
     /**
@@ -134,6 +131,8 @@ class ConferenceController extends AbstractController
         // handleRequest() inspects the request and calls submit() when the form was submitted.
         $form->handleRequest($request);
 
+        $filename = '';
+
         /**
          * The form knows if the form was submitted from a request parameter
          * Also will the form check if all submitted formdata is valid data
@@ -156,29 +155,19 @@ class ConferenceController extends AbstractController
                 } catch (FileException $e) {
                     //unable to upload the photo
                 }
-
-                // save the photo filename to the comment
-                $comment->setPhotoFilename($filename);
             }
 
-            // Use the Entity Manager to queue a persist task to create a new comment row in the database
+            // it's possible this will get flushed by a async messenger and then you will see the current state
+            $comment->setState('message queued');
+
+            // get the Comment entity ready for db and fetch id
             $this->entityManager->persist($comment);
 
-            // All queued tasks of the EntityManager are written to te database in Bulk
-            $this->entityManager->flush();
-
-            // create context for CommentMessage
-            $context = [
-                'user_ip' => $request->getClientIp(),
-                'referer' => $request->get('referer'),
-                'permalink' => $request->getUri(),
-            ];
-
-            // set temporary queued state, so you can see that it's in the Message queue
-            $comment->setState('in message queue');
-
-            // The bus will dispatch and send the message to the queue
-            $this->bus->dispatch(new CommentMessage($comment->getId(), $context));
+            // dispatch the CommentMessage with comment id and some context
+            $this->bus->dispatch(new CommentMessage($comment->getId(), [
+                'photoFilename' => $filename,
+                'clientIp' => $request->getClientIp(),
+            ]));
 
             // Redirect to the same page, when everything has gone correct, the new comment should be in the list
             return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);

@@ -62,6 +62,11 @@ class Comment
     private $state = "submitted";
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $clientIp;
+
+    /**
      * By adding this __toString function, the display on the
      * admin frontend will be better then only by primary key.     *
      * It will not be like Comment #1, Comment #2 anymore,
@@ -170,6 +175,18 @@ class Comment
     public function setState(string $state): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function getClientIp(): ?string
+    {
+        return $this->clientIp;
+    }
+
+    public function setClientIp(?string $clientIp): self
+    {
+        $this->clientIp = $clientIp;
 
         return $this;
     }

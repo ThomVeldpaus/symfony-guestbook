@@ -12,7 +12,7 @@ namespace App\Message;
  * A consumer always runs to read the Messages. The consumer will execute the logic in the
  * Message.
  *
- * A Message can't contain any logix. It is a data object. It will also be serialised when added
+ * A Message can't contain any logic. It is a data object. It will also be serialised when added
  * to the queue, so you can only add serializable data in the class.
  *
  * @package App\Message
