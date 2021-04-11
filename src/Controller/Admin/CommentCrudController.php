@@ -47,8 +47,8 @@ class CommentCrudController extends AbstractCrudController
      * By configuring the Fields in the configureFields function
      * we can influence the order of the fields.
      *
-     * There are even more things you can configurate in this function,
-     * you even can hide them from the homepage, etc.
+     * There are even more options to influence the appaarence and functionality,
+     * you even can hide them from certain CRUD pages
      *
      * @param string $pageName
      * @return iterable
